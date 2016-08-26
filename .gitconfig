@@ -1,0 +1,57 @@
+[user]
+  name = Mitsuhiro GOTA
+  email = mitsugogo@gmail.com
+[color]
+  status = auto
+  diff = auto
+  branch = auto
+  interactive = auto
+  grep = auto
+[push]
+  default = tracking
+[core]
+  excludesfile = ~/.gitignore
+  autocrlf = input
+  editor = vim
+  quotepath = false
+  pager = less -x4
+[merge]
+  tool = vimdiff
+[branch]
+  autosetuprebase = always
+[alias]
+  st = status
+  ll = log --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn%x09%Creset%s' # onelineでlogを出す
+  ranking = shortlog -s -n --no-merges
+  # modified or untrackedなファイルを編集する
+  edit = "!f() { git status -s | cut -b 4- | grep -v '\\/$' | uniq ; }; vim `f`"
+  # mergeの際にconflictが起きたファイルを編集
+  edit-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; vim `f`"
+  # mergeの際にconflictが起きたファイルをadd
+  add-unmerged = "!f() { git ls-files --unmerged | cut -f2 | sort -u ; }; git add `f`"
+  delete-unmerged =  "!f() { git ls-files --deleted | cut -f2 | sort -u ; }; git rm `f`"
+  # 指定したコミットで変更されたファイルを編集する
+  modified = "!f() { git diff $1..$1\\^ --name-only | xargs sh -c 'vim "$@" < /dev/tty' - ;}; f"
+  # cherr -vで出てくる;commitから#1234なチケット番号を切り出す
+  cherry-ticket-numbers = "!f() { git cherry -v "$@" | cut -b 44- | awk 'match($0, /#[0-9]+/) {print substr($0, RSTART, RLENGTH)}' | sort -u ;}; f"
+  # cherr -vに含まれるチケットを列挙する
+  cherry-tickets = "!f() { git cherry -v "$@" | cut -b 44- | awk 'match($0, /#[0-9]+/) {print substr($0, RSTART+1, RLENGTH-1)}' | sort -u | xargs git issue --oneline  ;}; f"
+  # マージ済みブランチを削除
+  delete-merged-branches = "!git branch --merged | grep -vE '^\\"*"|master$|develop$' | xargs -I % git branch -d %"
+  fp = "!git fetch origin --prune && git delete-merged-branches"
+[filter "media"]
+  clean = git-media-clean %f
+  smudge = git-media-smudge %f
+
+[grep]
+  lineNumber = true
+
+[pager]
+  log = diff-highlight | less -x4
+  show = diff-highlight | less -x4
+  diff = diff-highlight | less -x4
+
+[url "https://"]
+  insteadOf = git://
+[credential]
+  helper = store

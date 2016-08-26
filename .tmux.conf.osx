@@ -1,0 +1,121 @@
+set -s escape-time 0
+set -g default-terminal "xterm-256color"
+set -g history-limit 10000
+set -g pane-active-border-fg white
+set -g pane-active-border-bg black
+set -g status-attr dim
+set -g status-left-length 32
+set -g status-right-length 150
+set -g status-fg white
+set -g status-bg colour234
+set -g pane-border-fg colour245
+set -g pane-active-border-fg colour39
+set -g status-left '#[fg=colour223,bg=colour202,bold]( ꒪⌓꒪) #20(hostname -s)#[deafult] #S #[fg=colour202,bg=colour238,nobold]⮀#[fg=colour245,bg=colour238,bold] #(whoami) #[fg=colour238,bg=colour234,nobold]⮀'
+set -g window-status-format "#[fg=white,bg=colour234] #I #W "
+set -g window-status-current-format "#[fg=colour234,bg=colour39]⮀#[fg=colour25,bg=colour39,noreverse,bold] #I ⮁ #W #[fg=colour39,bg=colour234,bold]⮀"
+set -g status-right '#[fg=colour241]#H ⮃ #I:#P #[fg=colour31,bg=colour234,nobold]⮂#[fg=colour12,bg=colour31] Mem #(used-mem)%% ⮃ LAve.[#(loadaverage)] ⮂#[fg=colour31,bg=colour255,bold] %Y/%m/%d(%a)%H:%M#[default]'
+set -g message-attr bold
+set -g message-fg white
+set -g message-bg red
+# setw -g utf8 on
+setw -g mode-keys vi
+set -g mouse on
+bind -n WheelUpPane if-shell -F -t = "#{mouse_any_flag}" "send-keys -M" "if -Ft= '#{pane_in_mode}' 'send-keys -M' 'select-pane -t=; copy-mode -e; send-keys -M'"
+bind -n WheelDownPane select-pane -t= \; send-keys -M
+setw -g window-status-current-attr underscore
+setw -g mode-bg white
+setw -g mode-fg black
+setw -g window-status-bg black
+setw -g window-status-fg white
+setw -g window-status-current-bg blue
+setw -g window-status-current-fg black
+setw -g window-status-current-attr bold
+
+bind 'c' new-window -c "#{pane_current_path}"
+bind '"' split-window -vc "#{pane_current_path}"
+bind '%' split-window -hc "#{pane_current_path}"
+
+# displays *
+unbind *
+bind * list-clients
+
+# next ^@ ^N sp n
+unbind ^@
+bind ^@ next-window
+unbind ^N
+bind ^N next-window
+unbind " "
+bind " " next-window
+unbind n
+bind n next-window
+
+# title A
+unbind A
+bind A command-prompt "rename-window %%"
+
+# copy-mode ^[
+unbind ^"["
+bind -r ^"[" copy-mode
+unbind ^]
+bind -r ^] paste-buffer
+
+# other ^A
+unbind ^A
+bind ^A last-window
+
+# prev ^H ^P p ^?
+unbind BSpace
+bind BSpace previous-window
+
+# windows ^W w
+unbind ^W
+bind ^W list-windows
+unbind w
+bind w list-windows
+
+# quit \
+unbind \
+bind \ confirm-before "kill-server"
+
+# kill K k
+unbind K
+bind K confirm-before "kill-window"
+unbind k
+bind k confirm-before "kill-window"
+
+# redisplay ^R r
+unbind ^R
+bind ^R refresh-client
+unbind r
+bind r refresh-client
+
+# :kB: focus up
+unbind Tab
+bind Tab select-pane -t :.-
+unbind BTab
+bind BTab select-pane -t :.+
+
+# Smart pane switching with awareness of vim splits
+is_vim='echo "#{pane_current_command}" | grep -iqE "(^|\/)g?(view|n?vim?)(diff)?$"'
+bind -n C-h if-shell "$is_vim" "send-keys C-h" "select-pane -L"
+bind -n C-j if-shell "$is_vim" "send-keys C-j" "select-pane -D"
+bind -n C-k if-shell "$is_vim" "send-keys C-k" "select-pane -U"
+#bind -n C-l if-shell "$is_vim" "send-keys C-l" "select-pane -R"
+bind -n C-\ if-shell "$is_vim" "send-keys C-\\" "select-pane -l"
+
+# # copy & pastE
+# # ex. http://robots.thoughtbot.com/tmux-copy-paste-on-os-x-a-better-future
+# set -g default-command "which reattach-to-user-namespace > /dev/null 2>&1 && reattach-to-user-namespace -l $SHELL"
+
+# # Setup 'v' to begin selection as in Vim
+bind -t vi-copy v begin-selection
+bind -t vi-copy y copy-selection
+bind -t vi-copy V rectangle-toggle
+
+# # # Update default binding of `Enter` to also use copy-pipe
+# unbind -t vi-copy Enter
+# bind -t vi-copy Enter copy-pipe "reattach-to-user-namespace pbcopy"
+
+run-shell "powerline-daemon -q"
+source "/Users/mitsugogo/Library/Python/2.7/lib/python/site-packages/powerline/bindings/tmux/powerline.conf"
+

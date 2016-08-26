@@ -1,0 +1,14 @@
+set diff-options = -M
+set ignore-space = all
+set tab-size = 4
+set wrap-lines = yes
+# set line-number-display = yes
+bind generic g move-first-line
+bind generic G move-last-line
+bind generic <C-F> move-page-down
+bind generic <C-B> move-page-up
+bind stash D !?git stash drop %(stash)
+bind stash A !?git stash apply %(stash)
+
+set main-view = line-number:yes,interval=5 id:yes date:default author:full commit-title:yes,graph,refs,overflow=no
+set diff-view = line-number:yes,interval=8 text:yes,commit-title-overflow=no
