@@ -3,7 +3,7 @@ HOMEBREW_INSTALL_PATH=`brew --prefix`
 
 typeset -U path cdpath fpath manpath
 fpath=(~/.zsh/functions ${HOMEBREW_INSTALL_PATH}/etc/bash_completion.d ${HOMEBREW_INSTALL_PATH}/share/zsh-completions ${fpath})
-path=(~/.composer/vendor/bin(N-/) ~/.local/bin(N-/) ${HOMEBREW_INSTALL_PATH}/bin(N-/) ~/bin(N-/) ~/dotfiles/bin(N-/) /sowww/bin/shells(N-/) /usr/local/bin(N-/) /usr/local/sbin(N-/) /usr/sbin(N-/) /sbin(N-/) $path)
+path=(~/Library/Python/2.7/bin(N-/) ~/.composer/vendor/bin(N-/) ~/.local/bin(N-/) ${HOMEBREW_INSTALL_PATH}/bin(N-/) ~/bin(N-/) ~/dotfiles/bin(N-/) /sowww/bin/shells(N-/) /usr/local/bin(N-/) /usr/local/sbin(N-/) /usr/sbin(N-/) /sbin(N-/) $path)
 
 
 export INFOPATH="{$HOMEBREW_INSTALL_PATH}/.linuxbrew/share/info:$INFOPATH"
@@ -319,10 +319,26 @@ if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi
 
 # powerline
-if which powerline-daemon > /dev/null; then
-    powerline-daemon -q
-    source ~/Library/Python/2.7/lib/python/site-packages/powerline/bindings/zsh/powerline.zsh
+#if which powerline-daemon > /dev/null; then
+#    powerline-daemon -q
+#    source ~/Library/Python/2.7/lib/python/site-packages/powerline/bindings/zsh/powerline.zsh
+#fi
+function powerline_precmd() {
+    PS1="$(powerline-shell --shell zsh $?)"
+}
+function install_powerline_precmd() {
+  for s in "${precmd_functions[@]}"; do
+    if [ "$s" = "powerline_precmd" ]; then
+      return
+    fi
+  done
+  precmd_functions+=(powerline_precmd)
+}
+if [ "$TERM" != "linux" ]; then
+    install_powerline_precmd
 fi
+
+
 
 # qfc
 [[ -s "$HOME/.qfc/bin/qfc.sh" ]] && source "$HOME/.qfc/bin/qfc.sh"
@@ -331,11 +347,11 @@ fi
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # tmuxinator
-if gem which tmuxinator 1>/dev/null 2>/dev/null; then
-    source $(dirname $(dirname `gem which tmuxinator`))/completion/tmuxinator.zsh
-else
-    echo "tmuxinator is not installed ?"
-fi
+#if gem which tmuxinator 1>/dev/null 2>/dev/null; then
+#    source $(dirname $(dirname `gem which tmuxinator`))/completion/tmuxinator.zsh
+#else
+#    echo "tmuxinator is not installed ?"
+#fi
 if [ "$TERM" = "xterm-color" ]; then
     # No it isn't, it's gnome-terminal
     export TERM=xterm-256color
